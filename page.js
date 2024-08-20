@@ -4,13 +4,25 @@ module.exports = {
     toField: '#to',
     phoneNumberField: '#phone',
     codeField: '#code',
+    creditCardNumberField: '#number',
+    cardCodeField: '#code.card-input',
+    messageDriverField: '#comment.input',
+    planPhonePaymentMessageField:'.workflow-subcontainer',
     // Buttons
     callATaxiButton: 'button=Call a taxi',
     phoneNumberButton: '//div[starts-with(text(), "Phone number")]',
     nextButton: 'button=Next',
     confirmButton: 'button=Confirm',
+    supportiveButton: 'div=Supportive',
+    paymentMethodButton : '//div[contains(@class, "pp-button filled")]',
+    addCardButton : '//div[contains(@class, "pp-row disabled")]',
+    linkButton : 'div.pp-buttons > button.button.full[type="submit"]',
+    cardAddedButton : '.checkbox#card-1',
+    otherElement : 'body',
     // Modals
     phoneNumberModal: '.modal',
+    paymentMethodModal: '.modal',
+    addCardModal:'.modal unusual',
     // Functions
     fillAddresses: async function(from, to) {
         const fromField = await $(this.fromField);
@@ -48,4 +60,47 @@ module.exports = {
         await codeField.setValue(code)
         await $(this.confirmButton).click()
     },
-};
+    selectSupportivePlan: async function() {
+        const supportiveButton = await $(this.supportiveButton);
+        await supportiveButton.waitForDisplayed();
+        await supportiveButton.click();
+    },
+    isSupportiveButtonSelected: async function() {
+            const PlanSelected = await $(this.supportiveButton); 
+            return PlanSelected.isExisting();
+    },
+
+    addCreditCard: async function() {
+        const paymentMethodButton = await $(this.paymentMethodButton); 
+        await paymentMethodButton.waitForDisplayed();
+        await paymentMethodButton.click();
+        const addCardButton = await $(this.addCardButton);
+        await addCardButton.waitForDisplayed();
+        await addCardButton.click();
+        const creditCardNumberField = await $(this.creditCardNumberField);
+        await creditCardNumberField.waitForDisplayed();
+    },
+
+    submitCardInformation: async function(cardNumber, cardCode) {
+        const creditCardNumberField = await $(this.creditCardNumberField);
+        await creditCardNumberField.waitForDisplayed();
+        await creditCardNumberField.setValue(cardNumber);
+        const cardCodeField = await $(this.cardCodeField);
+        await cardCodeField.waitForDisplayed()
+        await cardCodeField.setValue(cardCode);
+        const otherElement = await $(this.otherElement); 
+        await otherElement.click(); 
+        const linkButton = await $(this.linkButton); 
+        await linkButton.waitForClickable();
+        await linkButton.click();
+        const cardAddedButon= await $(this.cardAddedButton);
+        await cardAddedButon.waitForExist({ timeout: 20000 });
+    },
+
+    sendMessageToDriver: async function() {
+        const messageDriverField = await $(this.messageDriverField);
+        await messageDriverField.scrollIntoView();
+        await messageDriverField.waitForExist();
+        await messageDriverField.setValue('get some water please'); 
+    }
+}
