@@ -6,8 +6,10 @@ module.exports = {
     codeField: '#code',
     creditCardNumberField: '#number',
     cardCodeField: '#code.card-input',
-    messageDriverField: '#comment.input',
+    messageDriverField: '#comment',
     planPhonePaymentMessageField:'.workflow-subcontainer',
+    iceCreamNumberField:".counter-value",
+    driverNumberField: ".order-number",
     // Buttons
     callATaxiButton: 'button=Call a taxi',
     phoneNumberButton: '//div[starts-with(text(), "Phone number")]',
@@ -19,10 +21,14 @@ module.exports = {
     linkButton : 'div.pp-buttons > button.button.full[type="submit"]',
     cardAddedButton : '.checkbox#card-1',
     otherElement : 'body',
+    blanketCheckbox : '//div[@class="r-sw"]',
+    blanketButtonStatus: '.switch-input',
+    addIceCreamButton : '.counter-plus',
+    orderButton : '.smart-button-wrapper',
     // Modals
     phoneNumberModal: '.modal',
-    paymentMethodModal: '.modal',
-    addCardModal:'.modal unusual',
+    cardModal : '.card-wrapper',
+    carSearchModal: '.order-body',
     // Functions
     fillAddresses: async function(from, to) {
         const fromField = await $(this.fromField);
@@ -64,21 +70,18 @@ module.exports = {
         const supportiveButton = await $(this.supportiveButton);
         await supportiveButton.waitForDisplayed();
         await supportiveButton.click();
-    },
-    isSupportiveButtonSelected: async function() {
-            const PlanSelected = await $(this.supportiveButton); 
-            return PlanSelected.isExisting();
+        return supportiveButton;
     },
 
-    addCreditCard: async function() {
+    openCardModal: async function() {
         const paymentMethodButton = await $(this.paymentMethodButton); 
         await paymentMethodButton.waitForDisplayed();
         await paymentMethodButton.click();
         const addCardButton = await $(this.addCardButton);
         await addCardButton.waitForDisplayed();
         await addCardButton.click();
-        const creditCardNumberField = await $(this.creditCardNumberField);
-        await creditCardNumberField.waitForDisplayed();
+        const cardModal = await $(this.cardModal);
+        await cardModal.waitForDisplayed();
     },
 
     submitCardInformation: async function(cardNumber, cardCode) {
@@ -102,5 +105,37 @@ module.exports = {
         await messageDriverField.scrollIntoView();
         await messageDriverField.waitForExist();
         await messageDriverField.setValue('get some water please'); 
-    }
+    },
+
+    orderBlanketHandkerchiefs: async function() {
+        const blanketCheckbox = await $(this.blanketCheckbox);
+        await blanketCheckbox.scrollIntoView();
+        await blanketCheckbox.waitForDisplayed();
+        await blanketCheckbox.click();
+     },
+
+     orderIceCreams: async function() {
+        const addIceCreamButton = await $(this.addIceCreamButton);
+        await addIceCreamButton.scrollIntoView();
+        await addIceCreamButton.waitForDisplayed();
+        await addIceCreamButton.click();
+        await addIceCreamButton.click();
+        const iceCreamNumberField = await $(this.iceCreamNumberField);
+        await iceCreamNumberField.waitForDisplayed();
+     },
+
+     openCarSearchModal: async function() {
+        const orderButton = await $(this.orderButton);
+        await orderButton.waitForDisplayed();
+        await orderButton.click();
+        const carSearchModal = await $(this.carSearchModal);
+        await carSearchModal.waitForExist();
+     },
+
+     showDriverInfo: async function() {
+        const driverNumberField = await $(this.driverNumberField);
+        await driverNumberField.waitForExist({timeout: 400000});
+     }
+
+    
 }

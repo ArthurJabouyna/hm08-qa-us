@@ -15,9 +15,9 @@ describe('Create an order', () => {
     it('should select the Supportive plan', async () => {
         await browser.url(`/`)
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        await page.selectSupportivePlan();
-        const isPlanSelected = await page.isSupportiveButtonSelected();
-        await expect(isPlanSelected).toBe(true);
+        const supportiveTariff = await page.selectSupportivePlan();
+        await expect(supportiveTariff.parentElement()).toHaveElementClass("active");
+       
     });
 
     it('should open phone number modal', async () => {
@@ -38,29 +38,66 @@ describe('Create an order', () => {
         await expect(await helper.getElementByText(phoneNumber)).toBeExisting();
     });
 
-    it('should add a credit card', async () => {
+    it('should open credit card modal', async () => {
         await browser.url(`/`)
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        await page.addCreditCard();
-        const creditCardNumberField = $(page.creditCardNumberField);
-        await expect(creditCardNumberField).toBeExisting();
+        await page.openCardModal();
+        const cardModal = $(page.cardModal);
+        await expect(cardModal).toBeExisting();
     });
+
 
     it('should save the card information', async() => {
         await browser.url(`/`)
         await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
-        await page.addCreditCard();
+        await page.openCardModal();
         await page.submitCardInformation('123456788765', '123')
         const cardAddedButon= await $(page.cardAddedButton);
         await cardAddedButon.waitForExist();
         await expect(cardAddedButon).toBeExisting();
     });
 
-    it.only('write a message for driver', async() => {
+    it('write a message for driver', async() => {
     await browser.url(`/`)
     await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+    await page.sendMessageToDriver('get some water please');
     const messageDriverField= await $(page.messageDriverField);
     await expect(messageDriverField).toHaveValue('get some water please');
 
-    })
+    });
+
+    it('should order a blanket and handkerchiefs', async() => {
+        await browser.url(`/`);
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        await page.selectSupportivePlan();
+        await page.orderBlanketHandkerchiefs();
+        await expect($(page.blanketButtonStatus)).toBeChecked();   
+    });
+
+    it('should order 2 ice creams', async() => {
+        await browser.url(`/`);
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        await page.selectSupportivePlan();
+        await page.orderIceCreams();
+        const iceCreamNumberField = await $(page.iceCreamNumberField);
+        await expect(iceCreamNumberField).toHaveTextContaining('2');
+    });
+
+    it('should open the car search modal', async() => {
+        await browser.url(`/`);
+        await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+        await page.openCarSearchModal();
+        const carSearchModal = await $(page.carSearchModal);
+        await expect(carSearchModal).toBeExisting();
+    });
+
+    it('should display driver information', async() => {
+            await browser.url(`/`);
+            await page.fillAddresses('East 2nd Street, 601', '1300 1st St');
+            await page.sendMessageToDriver('Get some water please')
+            await page.openCarSearchModal();
+            await page.showDriverInfo();
+            const driverNumberField = await $(page.driverNumberField)
+            await expect(driverNumberField).toBeExisting();
+    });
 })
